@@ -1,4 +1,4 @@
-#This program generates the figure for the generic, as well as results used for table 1, and some other numerical
+#This program generates the figure for the simple function, as well as results used for table 1, and some other numerical
 #values used in the text
 
 import numpy as np
@@ -299,7 +299,7 @@ def do_plot(d, ax, position, incl=0, k=1):
     impr_h_rand[0] = 100*sum([(results_h[j] - results[2][j])/results[2][j] for j in range(len(results_h))])/len(results_h)
 
     print("---------------------------------------------------------")
-    print(str(d) + " dimensions - results for the generic function used in the manuscript \n")
+    print(str(d) + " dimensions - results for the simple function used in the manuscript \n")
 
     print("Improvement of hyperuniform over grid search in %: ", -impr_grid[mak+3])
     print("Improvement of hyperuniform over random search in %: ", -impr_rand[mak+3])
@@ -340,7 +340,7 @@ def do_plot(d, ax, position, incl=0, k=1):
 
 
 
-    print(str(d) + " dimensions - results for the generic function used in Tables I and IV \n")
+    print(str(d) + " dimensions - results for the simple function used in Tables I and IV \n")
 
 
     avg_all = [0]
@@ -512,7 +512,7 @@ do_plot(4, axs[1, 0], 'down')
 do_plot(5, axs[1, 1], 'down')
 
 print("---------------------------------------------------------")
-print("Results about the number of times each strategy was best for the generic function, used in the manuscript \n")
+print("Results about the number of times each strategy was best for the simple function, used in the manuscript \n")
 
 print("Grid", wins_grid[0])
 print("Random", wins_random[0])
@@ -530,12 +530,12 @@ for line in l.get_lines():
     line.set_linewidth(3)
 
 
-fig.suptitle("Comparison for the generic function in 2-5 dimensions", fontsize=35)
+fig.suptitle("Comparison for the simple function in 2-5 dimensions", fontsize=35)
 fig.text(-0.02, 0.5, "Loss relative to grid search", va='center', rotation='vertical', fontsize=30)
 fig.text(0.5, -0.02, "Number of sampled points", ha='center', rotation='horizontal', fontsize=30)
 
 plt.tight_layout()
-plt.savefig("Comparison_generic.jpg", bbox_inches='tight', dpi=600)
+plt.savefig("Comparison_simple.jpg", bbox_inches='tight', dpi=600)
 plt.show()
 
 
@@ -560,4 +560,5 @@ plt.show()
 
 
  
+
 
