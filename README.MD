@@ -1,4 +1,4 @@
-# Improved-Hyperparameter-Optimization-
+# Stealthy hyperuniform sampling for hyperparameter optimisation
 Code repository for the article "Stealthy hyperuniform sampling for hyperparameter optimisation". The data needed for all scripts to run can be found
 here https://sid.erda.dk/sharelink/gDtCoRDXC6, from now on called the erda directory.
 
