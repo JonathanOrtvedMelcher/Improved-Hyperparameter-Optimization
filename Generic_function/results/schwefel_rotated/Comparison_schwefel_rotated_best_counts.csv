@@ -1,0 +1,12 @@
+Pattern,N best,Percent of comparisons
+grid,180000,58.0645
+random,17836,5.75355
+gridrandom,18672,6.02323
+latin,24443,7.88484
+sobol,18702,6.0329
+halton,18753,6.04935
+hyperuniform_0.4,18260,5.89032
+hyperuniform_0.3,18105,5.84032
+
+n_comparisons,310000,
+n_tied,4771,
