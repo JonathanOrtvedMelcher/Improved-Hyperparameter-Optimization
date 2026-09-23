@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 
 import GeneratingMultidimensional as gm
 
+from scipy.stats import qmc
+
 def randcoor(d,L):
     coor = []
     for _ in range(d):
@@ -531,85 +533,77 @@ def get_hyper(d, directory):
 def make_true_hyper(resolution, edges):
     number = np.prod(resolution)
     k = 1
+    chi = 0.4
     dim = len(resolution)
 
-    if dim==3:
-        directory0 = r"../../../data/Hyper_gridrandom2/stealthyForPaul2/stealthyForPaul2/3/5000/0.4/0/positions.dat"
-    if dim==4:
-       directory0 = r"../../../data/Hyper_gridrandom2/stealthyForPaul2/stealthyForPaul2/4/5000/0.4/0/positions.dat"
-    if dim==5:
-       directory0 = r"../../../data/Hyper_gridrandom2/stealthyForPaul2/stealthyForPaul2/5/5000/0.4/0/positions.dat"
+    vanilla_file_path = "/scratch/project_465003303/to_lumi_hyper_par/stealthyConfigurationsRedo/"
+    rand_int_0_10_000 = int(random.uniform(0, 10_000))
+    directory0 = vanilla_file_path + "/stealthySmallHyperPRedo" + "/" + str(dim) + "/" + str(number) + "/" + str(chi) + "/" + str(rand_int_0_10_000) + ".dat"
+
     hyperall = []
     densityhyper = 0
-    if dim!=2:
-        hyperall, densityhyper = get_hyper(dim, directory0)
+
+    hyperall, densityhyper = get_hyper(dim, directory0)
 
     pattern = hyperall
     density = densityhyper
 
-    if dim==2:
-
-        s=0.49
-        run = int(random.uniform(0, 60))
-
-        x = []
-        if s==0.38 and run>=20:
-         o = r"../../../data/Hyper_gridrandom2/stealthy-point-patterns/stealthy-"+str(s)+r"-1000/stealthy-"+str(s)+r"-lbfgs-1000-run-"+str(run)+".dat"
-        else:
-         o = r"../../../data/Hyper_gridrandom2/stealthy-point-patterns/stealthy-"+str(s)+r"-1000/stealthy-"+str(s)+r"-lbfgs-1000-run-"+str(run)+".txt"
-        with open(o) as f:
-            line = f.readline()
-            while line:
-                x.append([float(i) for i in line.split()])
-                line = f.readline()
-
-        d = 0 #the density
-        listhyper = []
-
-        for p in x:
-            if p[0] <= 20 and p[1] <= 20 and p[0] >= 5 and p[1] >= 5:
-                d += 1
-        d = d/225
-        a = np.sqrt(number/d)
-        f1 = k/a
-        f2 = (a+4)*k/(2*a)
-        for p in x:
-            if p[0] <= a+2 and p[1] <= a+2 and p[1] >= 2 and p[0] >= 2:
-                listhyper.append([p[0]*f1 - f2, p[1]*f1 - f2])
-
+    side = (number/density)**(1/dim)
 
     
+    if 0.95-side/2 >= 0.5:
+        center = [random.uniform(0.95-side/2, 0.05+side/2) for i in range(dim)]
     else:
-        side = (number/density)**(1/dim)
-
-        
-        if 0.95-side/2 >= 0.5:
-            center = [random.uniform(0.95-side/2, 0.05+side/2) for i in range(dim)]
-        else:
-            center = [0.5 for i in range(d)]
+        center = [0.5 for i in range(dim)]
 
 
-        listhyper = []
-        for p in pattern:
-            if all([p[i]-center[i] < side/2 and p[i]-center[i] > -side/2 for i in range(dim)]):
-                listhyper.append(list(p))
+    listhyper = []
+    for p in pattern:
+        if all([p[i]-center[i] < side/2 and p[i]-center[i] > -side/2 for i in range(dim)]):
+            listhyper.append(list(p))
 
 
         
-    print(dim)
+    #print(dim)
 
-    if dim==2:
-        listhyper = np.array(listhyper) + 0.5
-        old_min = np.zeros(dim)
-        old_max = np.ones(dim)
-    else:
-        old_min = np.array([center[i]-side/2 for i in range(dim)])
-        old_max = np.array([center[i]+side/2 for i in range(dim)])
+    old_min = np.array([center[i]-side/2 for i in range(dim)])
+    old_max = np.array([center[i]+side/2 for i in range(dim)])
 
     new_min, new_max = edges
     
 
     return transform_grid(listhyper, old_min, old_max, new_min, new_max)
+
+
+
+def sobol_grid(resolution, edges, seed=None):
+    d = len(resolution)
+    if d != len(edges[0]):
+        raise ValueError("The dimension of the grid and the dimension of the domain do not match")
+
+    new_min, new_max = edges
+    sampler = qmc.Sobol(d=d, scramble=True, seed=seed)
+    points = sampler.random(np.prod(resolution))
+
+    old_min = np.zeros(d)
+    old_max = np.ones(d)
+    return transform_grid(points, old_min, old_max, new_min, new_max)
+
+
+def halton_grid(resolution, edges, seed=None):
+    d = len(resolution)
+    if d != len(edges[0]):
+        raise ValueError("The dimension of the grid and the dimension of the domain do not match")
+
+    new_min, new_max = edges
+    sampler = qmc.Halton(d=d, scramble=True, seed=seed)
+    points = sampler.random(np.prod(resolution))
+
+    old_min = np.zeros(d)
+    old_max = np.ones(d)
+    return transform_grid(points, old_min, old_max, new_min, new_max)
+
+
 
 
 
@@ -683,4 +677,3 @@ Resolution and edges must have the same dimension. \n""")
     print('Time taken: ', end_time - start_time)
     plot_grid(true_hyper , 'true_hyper', d = 2)
     
-
